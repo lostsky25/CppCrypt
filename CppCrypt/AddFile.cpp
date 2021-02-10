@@ -1,6 +1,6 @@
-#include "QAddFile.h"
+#include "AddFile.h"
 
-QAddFile::QAddFile(QWidget* parent) : QWidget(parent) {
+AddFile::AddFile(QWidget* parent) : QWidget(parent) {
     hLayout = new QHBoxLayout();
 
     btnAddFile = new QPushButton(tr("..."));
@@ -13,8 +13,8 @@ QAddFile::QAddFile(QWidget* parent) : QWidget(parent) {
     lePathToFile->setMinimumWidth(300);
     lePathToFile->setReadOnly(true);
 
-    connect(btnAddFile, &QPushButton::clicked, this, &QAddFile::openFileDialog);
-    connect(this, &QAddFile::newFile, lePathToFile, &QLineEdit::setText);
+    connect(btnAddFile, &QPushButton::clicked, this, &AddFile::openFileDialog);
+    connect(this, &AddFile::newFile, lePathToFile, &QLineEdit::setText);
 
     hLayout->addWidget(lePathToFile);
     hLayout->addWidget(btnAddFile);
@@ -22,7 +22,13 @@ QAddFile::QAddFile(QWidget* parent) : QWidget(parent) {
     setLayout(hLayout);
 }
 
-void QAddFile::openFileDialog() {
+AddFile::~AddFile() {
+    delete hLayout;
+    delete btnAddFile;
+    delete lePathToFile;
+}
+
+void AddFile::openFileDialog() {
     pathToFile = QFileDialog::getOpenFileName(this, "...", "C:\\");
     emit newFile(pathToFile);
 }

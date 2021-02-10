@@ -5,11 +5,12 @@
 #include <QPushButton>
 #include <QHBoxLayout>
 
-class QAddFile : public QWidget
+class AddFile : public QWidget
 {
 	Q_OBJECT
 public:
-	QAddFile(QWidget* parent = Q_NULLPTR);
+	AddFile(QWidget* parent = Q_NULLPTR);
+	~AddFile();
 
 public slots:
 	void openFileDialog();

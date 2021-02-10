@@ -8,15 +8,10 @@ CppCrypt::CppCrypt(QWidget *parent) : QMainWindow(parent)
     
     QPixmap mLogo("m_logo.jpg");
 
-    crypto = new Crypto();
-    handler = new CryptHandler();
-
     outputBuffer = new QByteArray();
 
-    gost_28147 = new GOST_28147();
-
     vLayout = new QVBoxLayout();
-    addFile = new QAddFile();
+    addFile = new AddFile();
 
     cbAlgorithms = new QComboBox();
 
@@ -30,15 +25,16 @@ CppCrypt::CppCrypt(QWidget *parent) : QMainWindow(parent)
     lbPix->setPixmap(mLogo);
 
     cbAlgorithms->addItem("GOST_28147");
+    cbAlgorithms->addItem("GOST_281472");
+    cbAlgorithms->setCurrentIndex(-1);
 
-    //for (QHash<QString, int>::iterator it = hashAlgNames.begin(); it != hashAlgNames.end(); it++)
-      //  cbAlgorithms->addItem(it.key());
+    algorithms.insert("GOST_28147", new GOST_28147());
 
     vLayout->setAlignment(Qt::AlignmentFlag::AlignTop);
 
-    connect(addFile, &QAddFile::newFile, this, &CppCrypt::setFilePath);
+    connect(addFile, &AddFile::newFile, this, &CppCrypt::setFilePath);
     connect(lePasswd, &QLineEdit::textEdited, this, &CppCrypt::setPasswd);
-    //connect(btnEncrypt, &QPushButton::clicked, );
+    connect(cbAlgorithms, &QComboBox::currentTextChanged, this, &CppCrypt::setAlgoName);
     connect(btnEncrypt, &QPushButton::clicked, this, &CppCrypt::crpEncryptHandler);
     connect(btnDecrypt, &QPushButton::clicked, this, &CppCrypt::crpDecryptHandler);
 
@@ -52,6 +48,22 @@ CppCrypt::CppCrypt(QWidget *parent) : QMainWindow(parent)
     centralWidget()->setLayout(vLayout);
 }
 
+CppCrypt::~CppCrypt() {
+    qDeleteAll(algorithms);
+    
+    delete vLayout;
+    delete addFile;
+    delete cbAlgorithms;
+    delete btnEncrypt;
+    delete btnDecrypt;
+    delete lbPix;
+    delete lePasswd;
+}
+
+void CppCrypt::setAlgoName(QString currentAlgoName) {
+    this->currentAlgoName = currentAlgoName;
+}
+
 void CppCrypt::setFilePath(QString pathFile) {
     this->pathFile = pathFile;
 }
@@ -61,6 +73,7 @@ void CppCrypt::setPasswd(QString passwd) {
 }
 
 void CppCrypt::crpEncryptHandler() {
+    AbstractBinary* ab = Q_NULLPTR;
     input.setFileName(QString(pathFile).replace("/", "\\"));
     output.setFileName(QString(pathFile).replace("/", "\\") + ".enc");
 
@@ -72,56 +85,36 @@ void CppCrypt::crpEncryptHandler() {
 
         inputBuffer = input.readAll();
         outputBuffer->resize(inputBuffer.size());
-
-        //uint8_t* ch_temp = (uint8_t*)malloc(inputBuffer.size() * sizeof(uint8_t));
-        //uint8_t ch_tempp[32] = "qwerty";
-        //uint8_t* ch_tempp2 = (uint8_t*)malloc(inputBuffer.size() * sizeof(uint8_t));
-
-        /*int i;
-        for (i = 0; i < inputBuffer.size(); i++) {
-            ch_temp[i] = inputBuffer[i];
-        }*/
         
-        //temp[i] = '\0';
-        
-        //for (int i = 0; i < 6; i++) {
-        //    ch_tempp[i] = passwd[i];
-        //}
+        if ((ab = algorithms.find(currentAlgoName).value()) != Q_NULLPTR) {
+            if (ab->setPasswd(passwd)) {
+                ab->algStart(
+                    reinterpret_cast<uint8_t*>(outputBuffer->data()),
+                    'E',
+                    reinterpret_cast<uint8_t*>(inputBuffer.data()),
+                    inputBuffer.size()
+                );
+            }
+            else {
+                QMessageBox::warning(
+                    this,
+                    tr("CppCrypt Warning"), 
+                    tr("Invalid password"),
+                    QMessageBox::Cancel
+                    );
+            }
+        }
 
-        /*
-        crypto->getAlgorithm("GOST_28147")->setPasswd(passwd.toUtf8());
-        reinterpret_cast<GOST_28147*>(crypto->getAlgorithm("GOST_28147"))->setLength(temp.size());
-        reinterpret_cast<GOST_28147*>(crypto->getAlgorithm("GOST_28147"))->setBuffer((uint8_t*)temp.data());
-        handler->setHandler(crypto->getAlgorithm("GOST_28147"));
-        uint8_t* ch_temp = handler->handleRequestEncrypt();
-        */
-
-        //QByteArray key256;
-        ////uint8_t encrypted[5000] = { 0 }, decrypted[5000] = { 0 };
-        //uint8_t ch = 0;
-
-        gost_28147->algStart(
-            reinterpret_cast<uint8_t*>(outputBuffer->data()), 
-            'E', 
-            reinterpret_cast<uint8_t*>(passwd.data()),
-            reinterpret_cast<uint8_t*>(inputBuffer.data()), 
-            inputBuffer.size()
-        );
-
-        //for (int i = 0; i < inputBuffer.size(); i++) {
-        //    inputBuffer[i] = ch_tempp2[i];
-        //}
-
-        //outputStream << temp;
         output.write(*outputBuffer);
     }
 
+    //outputBuffer->clear();
     output.close();
     input.close();
 }
 
-void CppCrypt::crpDecryptHandler()
-{
+void CppCrypt::crpDecryptHandler() {
+    AbstractBinary* ab = Q_NULLPTR;
     input.setFileName(QString(pathFile).replace("/", "\\"));
     output.setFileName(QString(pathFile).replace("/", "\\") + ".dec");
 
@@ -132,17 +125,29 @@ void CppCrypt::crpDecryptHandler()
         inputBuffer = input.readAll();
         outputBuffer->resize(inputBuffer.size());
 
-        gost_28147->algStart(
-            reinterpret_cast<uint8_t*>(outputBuffer->data()),
-            'D',
-            reinterpret_cast<uint8_t*>(passwd.data()),
-            reinterpret_cast<uint8_t*>(inputBuffer.data()),
-            inputBuffer.size()
-        );
+        if ((ab = algorithms.find(currentAlgoName).value()) != Q_NULLPTR) {
+            if (ab->setPasswd(passwd)) {
+                ab->algStart(
+                    reinterpret_cast<uint8_t*>(outputBuffer->data()),
+                    'D',
+                    reinterpret_cast<uint8_t*>(inputBuffer.data()),
+                    inputBuffer.size()
+                );
+            }
+            else {
+                QMessageBox::warning(
+                    this,
+                    tr("CppCrypt Warning"),
+                    tr("Invalid password"),
+                    QMessageBox::Cancel
+                );
+            }
+        }
 
         output.write(*outputBuffer);
     }
 
+    //outputBuffer->clear();
     output.close();
     input.close();
 }

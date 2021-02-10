@@ -87,10 +87,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AbstractBinary.cpp" />
-    <ClCompile Include="CryptHandler.cpp" />
-    <ClCompile Include="Crypto.cpp" />
     <ClCompile Include="GOST_28147.cpp" />
-    <ClCompile Include="QAddFile.cpp" />
+    <ClCompile Include="AddFile.cpp" />
     <QtRcc Include="CppCrypt.qrc" />
     <QtUic Include="CppCrypt.ui" />
     <QtMoc Include="CppCrypt.h" />
@@ -98,15 +96,14 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="QAddFile.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <QtMoc Include="Crypto.h" />
+    <QtMoc Include="AddFile.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractBinary.h" />
-    <ClInclude Include="CryptHandler.h" />
     <ClInclude Include="GOST_28147.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="styles.qss" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

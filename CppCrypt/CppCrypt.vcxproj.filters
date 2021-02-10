@@ -53,29 +53,15 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="QAddFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GOST_28147.cpp">
       <Filter>Source Files\Core\Algorithms</Filter>
-    </ClCompile>
-    <ClCompile Include="Crypto.cpp">
-      <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="AbstractBinary.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="CryptHandler.cpp">
-      <Filter>Source Files\Core</Filter>
+    <ClCompile Include="AddFile.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <QtMoc Include="QAddFile.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="Crypto.h">
-      <Filter>Header Files\Сore</Filter>
-    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GOST_28147.h">
@@ -84,8 +70,15 @@
     <ClInclude Include="AbstractBinary.h">
       <Filter>Header Files\Сore</Filter>
     </ClInclude>
-    <ClInclude Include="CryptHandler.h">
-      <Filter>Header Files\Сore</Filter>
-    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="styles.qss">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="AddFile.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
 </Project>

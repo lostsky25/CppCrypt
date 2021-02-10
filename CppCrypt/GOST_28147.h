@@ -1,10 +1,5 @@
 #pragma once
 #include "AbstractBinary.h"
-#include "CryptHandler.h"
-
-
-#define BUF_SIZE 256
-
 
 #define LSHIFT_nBIT(x, L, N) (((x << L) | (x >> (-L & (N - 1)))) & (((uint64_t)1 << N) - 1))
 
@@ -12,19 +7,17 @@ class GOST_28147 : public AbstractBinary
 {
 public:
 	GOST_28147() = default;
-	
-	uint8_t* algStart(uint8_t*, uint8_t, uint8_t*, uint8_t*, size_t);
+	//virtual ~GOST_28147() override;
 
-	void setBuffer(uint8_t*);
-	void setLength(size_t);
+	//Inherited from AbstractBinary
+	virtual bool setPasswd(QString&) override;
+	virtual uint8_t* algStart(uint8_t*, uint8_t, uint8_t*, size_t) override;
 
-	// Унаследовано через CryptHandler
-	virtual uint8_t* handleRequestDecrypt() override;
-	virtual uint8_t* handleRequestEncrypt() override;
+	//virtual void setBuffer(uint8_t*) override;
+	//virtual void setLength(size_t) override;
 
 private:
 	size_t poss = 0;
-	uint8_t* buffer = 0;
 	//uint8_t* encrypted, *decrypted;
 
 	const uint8_t Sbox[8][16] = {

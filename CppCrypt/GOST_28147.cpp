@@ -1,35 +1,39 @@
 #include "GOST_28147.h"
 
-//GOST_28147::GOST_28147()
-//{
+//GOST_28147::~GOST_28147() {
+//	//free(buffer);
 //}
-void GOST_28147::setBuffer(uint8_t* bf) {
-	buffer = bf;
+
+//void GOST_28147::setPasswd(QString passwd) {
+//	this->key256 = passwd;
+//}
+
+//void GOST_28147::setBuffer(uint8_t* bf) {
+//	buffer = bf;
+//}
+//
+//void GOST_28147::setLength(size_t length)
+//{
+//	poss = length;
+//}
+
+bool GOST_28147::setPasswd(QString& passwd) {
+	if (!passwd.isEmpty() && passwd.size() < 32) {
+		key256 = reinterpret_cast<uint8_t*>(passwd.data());
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
-void GOST_28147::setLength(size_t length)
-{
-	poss = length;
-}
-
-
-uint8_t* GOST_28147::handleRequestDecrypt()
-{
-	return 0;
-}
-
-uint8_t* GOST_28147::handleRequestEncrypt()
-{
-	return 0;
-}
-
-uint8_t* GOST_28147::algStart(uint8_t* to, uint8_t mode, uint8_t* key256b, uint8_t* from, size_t length) {
+uint8_t* GOST_28147::algStart(uint8_t* to, uint8_t mode, uint8_t* from, size_t length) {
 	length = length % 8 == 0 ? length : length + (8 - (length % 8));
 	//encrypted = (uint8_t*)malloc(length * sizeof(uint8_t));
 	uint32_t N[2], keys32b[8];
 
 	//Splitting the key into 32 bits
-	split_256bits_to_32bits(key256b, keys32b);
+	split_256bits_to_32bits(key256, keys32b);
 
 	for (size_t i = 0; i < length; i += 8)
 	{

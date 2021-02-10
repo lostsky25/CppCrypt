@@ -4,12 +4,26 @@ AbstractBinary::AbstractBinary()
 {
 }
 
-QString AbstractBinary::getName() {
-	return name;
-}
+//AbstractBinary::~AbstractBinary() {
+//	//free(buffer);
+//}
 
-void AbstractBinary::setPasswd(QByteArray passwd) {
-	this->key256 = passwd;
+//void AbstractBinary::setName(QString name) {
+//	this->name = name;
+//}
+//
+//QString AbstractBinary::getName() {
+//	return name;
+//}
+//
+bool AbstractBinary::setPasswd(QString& passwd) {
+	if (!passwd.isEmpty()) {
+		key256 = reinterpret_cast<uint8_t*>(passwd.data());
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 void AbstractBinary::split_256bits_to_32bits(uint8_t* block256b, uint32_t* blocks32b)

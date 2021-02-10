@@ -3,33 +3,30 @@
 #include <cstdint>
 #include <cctype>
 
-#include "CryptHandler.h"
-
-#define BUFF_SIZE 256
-
-class AbstractBinary : public CryptHandler
+class AbstractBinary
 {
 public:
 	AbstractBinary();
+	//virtual ~AbstractBinary();
 
-	QString getName();
+	//QString getName();
 
 	//void setBuffer(QByteArray&);
-	void setPasswd(QByteArray);
-	//void setLength(size_t);
-	
-	//virtual void handleRequestDecrypt() = 0;
-	//virtual void handleRequestEncrypt() = 0;
+	//void setName(QString);
 
+	virtual bool setPasswd(QString&);
+	//virtual void setBuffer(uint8_t*) = 0;
+	//virtual void setLength(size_t) = 0;
+
+	virtual uint8_t* algStart(uint8_t*, uint8_t, uint8_t*, size_t) = 0;
 
 protected:
-	
-
 	QString name;
-
-	QByteArray key256;
+	uint8_t* key256;
+	uint8_t* buffer = 0;
+	
 	//uint8_t encrypted[BUFF_SIZE] = { 0 }, decrypted[BUFF_SIZE] = { 0 };// , buffer[BUFF_SIZE] = { 0 };
-	uint8_t ch = 0;
+	//uint8_t ch = 0;
 
 	virtual void split_256bits_to_32bits(uint8_t*, uint32_t*);
 	virtual void split_64bits_to_32bits(uint64_t, uint32_t*);
